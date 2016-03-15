@@ -45,7 +45,17 @@ Current problem:
 public class RecreatingSnake{
 	//Each tile is 20x20 pixels
 	//The whole grid is also 20x20
-	//The whole thing will be 400x400pixels
+	//The whole thing will be 400x400pixels (Disregarding the borders of the frame and the title bar)
+	
+	/*
+	Finished methods:
+		Start();
+		resetFrame();
+		menu();
+		addingMenuListener();
+		addingKeyListener();
+		setGridValues();
+	*/
 	
 	public JButton start, quit;
 	public JFrame frame;
@@ -127,31 +137,16 @@ public class RecreatingSnake{
 	}
 
 	public class keyListener implements KeyListener{
-		public void keyPressed(KeyEvent e){
-			System.out.println("I got shit to work");
-			if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP){
+		public void keyPressed(KeyEvent e){ 
+			if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP){ 
 				snakeDirection = 1;
-				grid[snakeX-1][snakeY] = 1;
-				grid[snakeX][snakeY] = 0;
-				snakeX-=1;
-			}else if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT){
+			}else if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT){ 
 				snakeDirection = 2;
-				grid[snakeX][snakeY-1] = 1;
-				grid[snakeX][snakeY] = 0;
-				snakeY-=1;
-			}else if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN){
+			}else if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN){ 
 				snakeDirection = 3;
-				grid[snakeX+1][snakeY] = 1;
-				grid[snakeX][snakeY] = 0;
-				snakeY+=1;
-			}else if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT){
+			}else if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT){ 
 				snakeDirection = 4;
-				grid[snakeX][snakeY+1] = 1;
-				grid[snakeX][snakeY] = 0;
-				snakeY+=1;
-			}
-			setSnakeValues();
-			printGrid(); //will have to edit this once I get the thread timer thing going
+			} 
 		}
 		
 		@Override
@@ -187,7 +182,7 @@ public class RecreatingSnake{
 	
 	public void setGridValues(){
 		for(int i = 0; i < 400; i++){
-			pastDirection[i] = 0;
+			pastDirection[i] = 0; //resets the direction of every tile to null or zero.
 		}
 		for(int x = 0; x < 20; x++){
 			for(int y = 0; y < 20; y++){
@@ -230,52 +225,17 @@ public class RecreatingSnake{
 		//addingKeyListener();
 		//frame.addKeyListener(new keyListener());
 		resetFrame();
+		try{
+			Thread.sleep(250); 
+			setSnakeValues();
+			printGrid();
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void setSnakeValues(){
-		int tempX = snakeX, tempY = snakeY;
-		for(int i = 0; i < 400; i++){
-			System.out.println("I am at number " + i + " and the value is " + pastDirection[i]);
-			if(i == 0){
-				if(snakeDirection == 1){
-					tempX+=1;
-					grid[tempX][tempY] = 1;
-				}else if(snakeDirection == 2){
-					tempY+=1;
-					grid[tempX][tempY] = 1;
-				}else if(snakeDirection == 3){
-					tempX-=1;
-					grid[tempX][tempY] = 1;
-				}else if(snakeDirection == 4){
-					tempY-=1;
-					grid[tempX][tempY] = 1;
-				}
-			}else if(pastDirection[i] == 0){
-				break;
-			}else if(pastDirection[i] == 1){
-				tempX+=1;
-				grid[tempX][tempY] = 1;
-			}else if(pastDirection[i] == 2){
-				tempY+=1;
-				grid[tempX][tempY] = 1;
-			}else if(pastDirection[i] == 3){
-				tempX-=1;
-				grid[tempX][tempY] = 1;
-			}else if(pastDirection[i] == 4){
-				tempY-=1;
-				grid[tempX][tempY] = 1;
-			}
-		}
-		for(int i = 0; i < 400; i++){
-			if(i == 0){
-				pastDirection[i] = snakeDirection;
-			}else if(pastDirection[i] == 0){
-				break;
-			}else{
-				pastDirection[i] = pastDirection[i+1];
-			}
-		}
-	
+	 	
 	}
 	
 	public void gameOn(){
