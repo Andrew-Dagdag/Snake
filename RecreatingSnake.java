@@ -42,20 +42,10 @@ Current problem:
 
 */
 
-public class RecreatingSnake{
+public class RecreatingSnake extends Thread{
 	//Each tile is 20x20 pixels
 	//The whole grid is also 20x20
-	//The whole thing will be 400x400pixels (Disregarding the borders of the frame and the title bar)
-	
-	/*
-	Finished methods:
-		Start();
-		resetFrame();
-		menu();
-		addingMenuListener();
-		addingKeyListener();
-		setGridValues();
-	*/
+	//The whole thing will be 400x400pixels
 	
 	public JButton start, quit;
 	public JFrame frame;
@@ -65,8 +55,13 @@ public class RecreatingSnake{
 	public int snakeX = 10, snakeY = 10, snakeLength = 3, snakeDirection = 4;
 	public int[] pastDirection = new int[400];
 	
+	public boolean start1 = true;
+	
 	RecreatingSnake(){
-		Start();
+		if(start1){ 
+			start1 = false;
+			Start();
+		}
 	}
 	
 	public static void main(String[] args){
@@ -137,16 +132,17 @@ public class RecreatingSnake{
 	}
 
 	public class keyListener implements KeyListener{
-		public void keyPressed(KeyEvent e){ 
-			if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP){ 
-				snakeDirection = 1;
-			}else if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT){ 
+		public void keyPressed(KeyEvent e){
+			System.out.println("I got shit to work");
+			if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP){
+				snakeDirection = 1; 
+			}else if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT){
 				snakeDirection = 2;
-			}else if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN){ 
+			}else if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN){
 				snakeDirection = 3;
-			}else if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT){ 
+			}else if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT){
 				snakeDirection = 4;
-			} 
+			}
 		}
 		
 		@Override
@@ -168,7 +164,7 @@ public class RecreatingSnake{
 	4 - right
 	0 - end loop
 	*/
-	
+	int testX = 10, testY = 5;
 	public void addingKeyListener(){
 		frame.addKeyListener(new keyListener());
 	}
@@ -181,20 +177,26 @@ public class RecreatingSnake{
 	}
 	
 	public void setGridValues(){
+		
 		for(int i = 0; i < 400; i++){
-			pastDirection[i] = 0; //resets the direction of every tile to null or zero.
+			pastDirection[i] = 0;
 		}
 		for(int x = 0; x < 20; x++){
 			for(int y = 0; y < 20; y++){
 				grid[x][y] = 0;
 			}
 		}
+		
+		grid[testX][testY] = 1;
+		
+		/*
 		grid[10][5] = 1;
 		grid[10][4] = 1;
 		grid[10][3] = 1;
 		pastDirection[0] = 4;
 		pastDirection[1] = 4;
 		pastDirection[2] = 4;
+		*/
 	}
 	
 	public JLabel tile;
@@ -206,8 +208,7 @@ public class RecreatingSnake{
 		frame.setContentPane(new JLabel(new ImageIcon("SnakeBG.png")));
 		//addingKeyListener();
 		frame.setLayout(new GridLayout(20,20,0,0));
-		//addingKeyListener();
-		//JPanel panel = new JPanel(new GridLayout(20,20,0,0));
+		
 		for(int x = 0; x < 20; x++){
 			for(int y = 0; y < 20; y++){
 				if (grid[x][y] == 0){
@@ -218,28 +219,48 @@ public class RecreatingSnake{
 				frame.add(tile);
 			}
 		}
-		//frame.toFront();
-		//frame.setState(Frame.NORMAL);
+		
 		frame.requestFocus();
-		//frame.add(panel);
-		//addingKeyListener();
-		//frame.addKeyListener(new keyListener());
-		resetFrame();
-		try{
-			Thread.sleep(250); 
-			setSnakeValues();
-			printGrid();
-		}catch(InterruptedException e){
-			e.printStackTrace();
+		resetFrame(); 
+		//reiterate();
+	}
+	
+	private class Reiteration implements Runnable{
+		Reiteration(){}
+		public void run(){
+			try{
+				while(true){
+					Thread.sleep(1000);
+					System.out.println("I am now resetting everything");
+					setSnakeValues();
+					printGrid();
+				}
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public void setSnakeValues(){
-	 	
+		grid[testX][testY] = 0;
+
+		if(snakeDirection == 1){
+			testX--;
+		}else if(snakeDirection == 2){
+			testY--;
+		}else if(snakeDirection == 3){
+			testX++;
+		}else if(snakeDirection == 4){
+			testY++;
+		}else{}
+		
+		grid[testX][testY] = 1;
 	}
 	
 	public void gameOn(){
 		setGridValues();
+		Thread reiterate = new Thread(new Reiteration());
+		reiterate.start();
 		printGrid();
 	}
 }
