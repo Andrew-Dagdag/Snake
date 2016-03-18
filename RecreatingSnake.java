@@ -52,8 +52,8 @@ public class RecreatingSnake extends Thread{
 
 	public int[][] grid = new int[20][20];
 
-	public int snakeX = 10, snakeY = 10, snakeLength = 3, snakeDirection = 4;
-	public int[] pastDirection = new int[400];
+	public int snakeLength = 3, snakeDirection = 4;
+	public int[] pastDirection = new int[400], snakeX = new int[400], snakeY = new int[400];
 	
 	public boolean start1 = true;
 	
@@ -121,7 +121,7 @@ public class RecreatingSnake extends Thread{
 		public void actionPerformed(ActionEvent e){
 			String click = e.getActionCommand();
 			if(click == "Start"){
-				frame.setTitle("I clicked Start");
+				frame.setTitle("Game on!");
 				addingKeyListener();
 				gameOn();
 			}else if(click == "Quit"){
@@ -136,12 +136,16 @@ public class RecreatingSnake extends Thread{
 			System.out.println("I got shit to work");
 			if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP){
 				snakeDirection = 1; 
+				pastDirection[0] = 1;
 			}else if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT){
 				snakeDirection = 2;
+				pastDirection[0] = 2;
 			}else if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN){
 				snakeDirection = 3;
+				pastDirection[0] = 3;
 			}else if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT){
 				snakeDirection = 4;
+				pastDirection[0] = 4;
 			}
 		}
 		
@@ -158,13 +162,13 @@ public class RecreatingSnake extends Thread{
 	2 - Snake Body
 	3 - Snake Tail
 	
+	Movement
 	1 - up
 	2 - left
 	3 - down
 	4 - right
 	0 - end loop
 	*/
-	int testX = 10, testY = 5;
 	public void addingKeyListener(){
 		frame.addKeyListener(new keyListener());
 	}
@@ -187,16 +191,31 @@ public class RecreatingSnake extends Thread{
 			}
 		}
 		
-		grid[testX][testY] = 1;
-		
-		/*
-		grid[10][5] = 1;
-		grid[10][4] = 1;
-		grid[10][3] = 1;
+ 		snakeX[0] = 10;
+		snakeY[0] = 5;
 		pastDirection[0] = 4;
+		grid[snakeX[0]][snakeY[0]] = 1;
+
+		snakeX[1] = 10;
+		snakeY[1] = 4;
 		pastDirection[1] = 4;
+		grid[snakeX[1]][snakeY[1]] = 1;
+		
+		snakeX[2] = 10;
+		snakeY[2] = 3;
 		pastDirection[2] = 4;
-		*/
+		grid[snakeX[2]][snakeY[2]] = 1;
+		
+		snakeX[3] = 10;
+		snakeY[3] = 2;
+		pastDirection[3] = 4;
+		grid[snakeX[3]][snakeY[3]] = 1;
+		
+		snakeX[4] = 9;
+		snakeY[4] = 2;
+		pastDirection[4] = 3;
+		grid[snakeX[4]][snakeY[4]] = 1;
+		
 	}
 	
 	public JLabel tile;
@@ -204,10 +223,16 @@ public class RecreatingSnake extends Thread{
 		frame.getContentPane().removeAll();
 		frame.validate();
 		frame.repaint();
-		frame.setLayout(new BorderLayout());
+		//frame.setLayout(new BorderLayout());
 		frame.setContentPane(new JLabel(new ImageIcon("SnakeBG.png")));
+		
+		frame.setLayout(new BorderLayout());
+		frame.add(new JLabel("Press spacebar to pause/play the game"), BorderLayout.SOUTH); 
+		
 		//addingKeyListener();
 		frame.setLayout(new GridLayout(20,20,0,0));
+		
+		grid[5][5] = 2;
 		
 		for(int x = 0; x < 20; x++){
 			for(int y = 0; y < 20; y++){
@@ -215,6 +240,10 @@ public class RecreatingSnake extends Thread{
 					tile = new JLabel();
 				}else if (grid[x][y] == 1){
 					tile = new JLabel(new ImageIcon("Head.png"));
+				}else if (grid[x][y] == 2){
+					tile = new JLabel(new ImageIcon("Body.png"));
+				}else if (grid[x][y] == 3){
+					tile = new JLabel(new ImageIcon("Empty.png"));
 				}
 				frame.add(tile);
 			}
@@ -230,8 +259,7 @@ public class RecreatingSnake extends Thread{
 		public void run(){
 			try{
 				while(true){
-					Thread.sleep(1000);
-					System.out.println("I am now resetting everything");
+					Thread.sleep(500);
 					setSnakeValues();
 					printGrid();
 				}
@@ -240,21 +268,59 @@ public class RecreatingSnake extends Thread{
 			}
 		}
 	}
-	
-	public void setSnakeValues(){
-		grid[testX][testY] = 0;
 
+	public void setSnakeValues(){
+		for(int x = 0; x < 20; x++){
+			for(int y = 0; y < 20; y++){
+				grid[x][y] = 0;
+			}
+		} //Clears the grid of everything
+		
+		int tempX1 = snakeX[0], tempX2 = snakeX[1];
+		int tempdirection1 = pastDirection[0], tempdirection2 = pastDirection[1];
+		int tempY1 = snakeY[0], tempY2 = snakeY[2];
+		boolean trigger = true;
+		for(int i = 1; i < 400; i++){ 
+			if(pastDirection[i] == 0){
+				grid[snakeX[i-1]][snakeY[i-1]] = 3;
+				break;
+			}else{
+				if(trigger){
+					tempX2 = snakeX[i];
+					tempY2 = snakeY[i];
+					tempdirection2 = pastDirection[i];
+				
+					snakeX[i] = tempX1;
+					snakeY[i] = tempY1;
+					pastDirection[i] = tempdirection1;
+					
+					trigger = false;
+				}else if(!trigger){
+					tempX1 = snakeX[i];
+					tempY1 = snakeY[i];
+					tempdirection1 = pastDirection[i];
+				
+					snakeX[i] = tempX2;
+					snakeY[i] = tempY2;
+					pastDirection[i] = tempdirection2;
+					
+					trigger = true;
+				} 
+					grid[snakeX[i]][snakeY[i]] = 2;
+			}
+		}
+		
 		if(snakeDirection == 1){
-			testX--;
+			snakeX[0]--;
 		}else if(snakeDirection == 2){
-			testY--;
+			snakeY[0]--;
 		}else if(snakeDirection == 3){
-			testX++;
+			snakeX[0]++;
 		}else if(snakeDirection == 4){
-			testY++;
+			snakeY[0]++;
 		}else{}
 		
-		grid[testX][testY] = 1;
+		grid[snakeX[0]][snakeY[0]] = 1;
 	}
 	
 	public void gameOn(){
