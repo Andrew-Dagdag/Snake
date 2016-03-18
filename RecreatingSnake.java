@@ -223,11 +223,11 @@ public class RecreatingSnake extends Thread{
 		frame.getContentPane().removeAll();
 		frame.validate();
 		frame.repaint();
-		//frame.setLayout(new BorderLayout());
+ 		frame.setLayout(new BorderLayout());
 		frame.setContentPane(new JLabel(new ImageIcon("SnakeBG.png")));
 		
-		frame.setLayout(new BorderLayout());
-		frame.add(new JLabel("Press spacebar to pause/play the game"), BorderLayout.SOUTH); 
+	//	frame.setLayout(new BorderLayout());
+	//	frame.add(new JLabel("Press spacebar to pause/play the game"), BorderLayout.SOUTH); 
 		
 		//addingKeyListener();
 		frame.setLayout(new GridLayout(20,20,0,0));
